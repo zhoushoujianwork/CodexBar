@@ -543,6 +543,7 @@ enum DashboardSnapshotBuilder {
             usedPercent: used,
             remainingPercent: remaining,
             resetAt: window.resetsAt,
+            windowMinutes: window.windowMinutes,
             idle: idle)
     }
 

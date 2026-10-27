@@ -207,6 +207,14 @@ struct DashboardWindowPayload: Encodable {
     let usedPercent: Double
     let remainingPercent: Double
     let resetAt: Date?
+    /// The provider-reported duration of this window in minutes, when the provider reports one.
+    ///
+    /// A display client can label a lane ("5h", "7d") or compute a burn-down rate from it without
+    /// parsing `kind` or `label`. The value is copied verbatim from the provider's usage window: it is
+    /// never derived from the kind or the label, and a window whose duration the provider did not report
+    /// omits the key instead of carrying a guessed default.
+    /// Additive schema-v1 extension: the key appears only when the duration is known.
+    let windowMinutes: Int?
     /// Whether a display client should skip this window. The producer sets it when the window belongs
     /// to a model family that reports no usage at all, which a client cannot work out on its own
     /// because a zero `usedPercent` also stands for a lane whose usage the provider never reported.
@@ -220,6 +228,7 @@ struct DashboardWindowPayload: Encodable {
         usedPercent: Double,
         remainingPercent: Double,
         resetAt: Date?,
+        windowMinutes: Int? = nil,
         idle: Bool = false)
     {
         self.kind = kind
@@ -227,6 +236,7 @@ struct DashboardWindowPayload: Encodable {
         self.usedPercent = usedPercent
         self.remainingPercent = remainingPercent
         self.resetAt = resetAt
+        self.windowMinutes = windowMinutes
         self.idle = idle
     }
 
@@ -236,6 +246,7 @@ struct DashboardWindowPayload: Encodable {
         case usedPercent
         case remainingPercent
         case resetAt
+        case windowMinutes
         case idle
     }
 
@@ -246,6 +257,8 @@ struct DashboardWindowPayload: Encodable {
         try container.encode(self.usedPercent, forKey: .usedPercent)
         try container.encode(self.remainingPercent, forKey: .remainingPercent)
         try container.encode(self.resetAt, forKey: .resetAt)
+        // Omitted when the provider reported no duration, so a client cannot read an absent key as a duration.
+        try container.encodeIfPresent(self.windowMinutes, forKey: .windowMinutes)
         if self.idle {
             try container.encode(true, forKey: .idle)
         }

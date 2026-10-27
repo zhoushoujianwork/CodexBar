@@ -67,6 +67,7 @@ struct DashboardManagedCodexSnapshotTests {
         #expect(projected.identity?.accountEmail == email)
         #expect(projected.identity?.plan == (mode == .none ? nil : "Plus"))
         #expect(projected.windows.map(\.kind) == ["session", "weekly"])
+        #expect(projected.windows.map(\.windowMinutes) == [300, 10080])
         #expect(projected.pace?.primary != nil)
         #expect(projected.updatedAt == self.generatedAt)
         #expect(rows[1].source == "fixture")

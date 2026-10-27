@@ -329,8 +329,10 @@ struct DashboardSnapshotBuilderTests {
         #expect(windows[0]["usedPercent"] as? Double == 28)
         #expect(windows[0]["remainingPercent"] as? Double == 72)
         #expect(windows[0]["resetAt"] as? String == "2027-01-15T09:00:00Z")
+        #expect(windows[0]["windowMinutes"] as? Int == 300)
         #expect(windows[1]["kind"] as? String == "weekly")
         #expect(windows[1]["label"] as? String == "Weekly")
+        #expect(windows[1]["windowMinutes"] as? Int == 10080)
 
         #expect(credits["remaining"] as? Double == 112.4)
         #expect(credits["unit"] as? String == "credits")

@@ -387,6 +387,12 @@ A managed Codex entry in redacted mode (other account fields use the same shapes
   an adapter, ignores the key and keeps the row. The built-in web UI drops these rows so the page matches the app
   menu, which hides an untouched Antigravity model family. Only the producer can set this: a zero `usedPercent` also
   stands for a lane whose usage the provider never reported, and the payload does not carry that distinction.
+- `providers[].windows[].windowMinutes`: The duration of the window in minutes, when the provider reports one. A
+  display client can label a lane ("5h", "7d") or compute a burn-down rate from it without parsing `kind` or `label`.
+  The value is copied verbatim from the provider's usage window; it is never derived from the kind or the label, and a
+  window whose duration the provider did not report omits the key instead of carrying a guessed default. This is an
+  additive schema-v1 extension. A calendar-month window carries the existing `43200` minute nominal sentinel, so read
+  it as "about a month" rather than an exact duration; `resetAt` remains the authoritative reset time.
 - `providers[].credits`: Remaining credits or balance when available.
   Grok's purchased wallet is currently exposed by `codexbar usage --provider grok --json` and `/usage` as
   `usage.providerCost.balance` with `currencyCode: "USD"`, not by this dashboard projection. It is separate from
@@ -407,7 +413,8 @@ A managed Codex entry in redacted mode (other account fields use the same shapes
   - `active`: Whether this is the source's active account.
   - `identity`: Account email even when usage is unavailable; otherwise `null`. Claude-swap has a `null` plan;
     Codex includes the saved plan when available. The email local part is hidden only in redacted mode.
-  - `windows`: Account-local session, weekly, and scoped windows in the same shape as `providers[].windows`.
+  - `windows`: Account-local session, weekly, and scoped windows in the same shape as `providers[].windows`, including
+    the optional `windowMinutes` duration that a provider-reported window carries and an unknown duration omits.
   - `pace`: Account-local primary, secondary, and tertiary pace values when computable. Each pace value contains
     `stage`, `deltaPercent`, `expectedUsedPercent`, `willLastToReset`, `etaSeconds`, `runOutProbability`, and `summary`.
   - `error`: Account-local diagnostic, or `null`.
